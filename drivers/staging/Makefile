@@ -44,3 +44,4 @@ obj-$(CONFIG_GREYBUS)		+= greybus/
 obj-$(CONFIG_PRIMA_WLAN)	+= prima/
 obj-$(CONFIG_PRONTO_WLAN)	+= prima/
 obj-$(CONFIG_BCM2708_VCHIQ)	+= vc04_services/
+obj-$(CONFIG_PRONTO_WLAN)	+= prima/
