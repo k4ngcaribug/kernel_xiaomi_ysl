@@ -59,6 +59,8 @@
 
 #define WLAN_MAC_FILE              "wlan/prima/wlan_mac.bin"
 
+#define WLAN_MAC_FILE              "wlan/prima/wlan_mac.bin"
+
 VOS_STATUS hdd_request_firmware(char *pfileName,v_VOID_t *pCtx,v_VOID_t **ppfw_data, v_SIZE_t *pSize);
 
 VOS_STATUS hdd_release_firmware(char *pFileName,v_VOID_t *pCtx);
