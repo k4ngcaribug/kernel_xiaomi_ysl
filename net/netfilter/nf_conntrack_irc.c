@@ -316,6 +316,7 @@ static int help(struct sk_buff *skb, unsigned int protoff,
 				data++;
 				continue;
 			}
+
 			data += 6;
 			nick_end = data;
 			i = 0;
