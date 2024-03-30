@@ -55,8 +55,7 @@
 			< 6152 >, /* 8. DDR:806.40 MHz BIMC: 403.20 MHz */
 			< 6445 >, /* 9. DDR:844.80 MHz BIMC: 422.40 MHz */
 			< 7104 >; /*10. DDR:931.20 MHz BIMC: 465.60 MHz */
-			< 7759 >, /*11. DDR:1017.00 MHz BIMC: 508.50 MHz */
-			< 9887 >; /*12. DDR:1296.00 MHz BIMC: 648.00 MHz */
+			< 9887 >; /*11. DDR:1296.00 MHz BIMC: 648.00 MHz */
 	};
 
 	msm_gpu: qcom,kgsl-3d0@1c00000 {
@@ -110,8 +109,7 @@
 				<26 512 0 6451200>, /* 8. 806.40 MHz */
 				<26 512 0 6758400>, /* 9. 844.80 MHz */
 				<26 512 0 7449600>; /*10. 931.20 MHz */
-				<26 512 0 8136000>, /*11. 1017.00 MHz */
-				<26 512 0 10368000>; /*12. 1296.00 MHz */
+				<26 512 0 10368000>; /*11. 1296.00 MHz */
 
 		/* GDSC regulator names */
 		regulator-names = "vddcx", "vdd";
@@ -190,9 +188,9 @@
 			qcom,gpu-pwrlevel@0 {
 				reg = <0>;
 				qcom,gpu-freq = <999000000>;
-				qcom,bus-freq = <12>;
-				qcom,bus-min = <12>;
-				qcom,bus-max = <12>;
+				qcom,bus-freq = <11>;
+				qcom,bus-min = <11>;
+				qcom,bus-max = <11>;
 			};
 
 			/* NOM+ */
