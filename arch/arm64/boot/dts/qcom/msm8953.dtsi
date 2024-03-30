@@ -896,14 +896,17 @@
 		clock-names = "xo";
 		qcom,gcc_oxili_gfx3d_clk-opp-handle = <&msm_gpu>;
 		qcom,gfxfreq-corner =
-			 <         0   0 >,
-			 < 133330000   1 >,  /* Min SVS   */
-			 < 216000000   2 >,  /* Low SVS   */
-			 < 320000000   3 >,  /* SVS       */
-			 < 400000000   4 >,  /* SVS Plus  */
-			 < 510000000   5 >,  /* NOM       */
-			 < 560000000   6 >,  /* Nom Plus  */
-			 < 999000000   7 >;  /* Turbo     */
+			  <         0   0 >,
+		 < 133330000   1 >,  /* Min SVS   */
+		 < 216000000   2 >,  /* Low SVS   */
+		 < 320000000   3 >,  /* SVS       */
+		 < 400000000   4 >,  /* SVS Plus  */
+		 < 510000000   5 >,  /* NOM       */
+		 < 560000000   6 >,  /* Nom Plus  */
+		 < 650000000   7 >,  /* Turbo     */
+		 < 750000000   7 >,  /* Turbo     */
+		 < 908000000   7 >,  /* Turbo     */
+		 < 999000000   7 >;  /* Turbo     */
 		#clock-cells = <1>;
 	};
 
