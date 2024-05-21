@@ -2068,9 +2068,7 @@ static void sdhci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	if (!reinit_uhs &&
 	    turning_on_clk &&
 	    host->timing == ios->timing &&
-	    host->version >= SDHCI_SPEC_300 &&
-	    !sdhci_presetable_values_change(host, ios))
-		goto out;
+	    host->version >= SDHCI_SPEC_300);
 
 	ctrl = sdhci_readb(host, SDHCI_HOST_CONTROL);
 
@@ -2148,16 +2146,6 @@ static void sdhci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 		host->ops->set_uhs_signaling(host, ios->timing);
 		host->timing = ios->timing;
-
-		if (sdhci_preset_needed(host, ios->timing)) {
-			u16 preset;
-
-			sdhci_enable_preset_value(host, true);
-			preset = sdhci_get_preset_value(host);
-			ios->drv_type = FIELD_GET(SDHCI_PRESET_DRV_MASK,
-						  preset);
-			host->drv_type = ios->drv_type;
-		}
 
 		/* Re-enable SD Clock */
 		if (ios->clock) {
