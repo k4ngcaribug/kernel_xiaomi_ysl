@@ -11,7 +11,7 @@
  * GNU General Public License for more details.
  */
 
-#include "msm8953.dtsi"
+#include "msm8953.dtsi" 
 
 / {
 	model = "Qualcomm Technologies, Inc. SDM450";
