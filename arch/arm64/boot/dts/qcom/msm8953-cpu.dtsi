@@ -144,7 +144,7 @@
 			clock-frequency = <1804800000>;
 			enable-method = "psci";
 			reg = <0x100>;
-			efficiency = <1126>;
+			efficiency = <1024>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -170,7 +170,7 @@
 			clock-frequency = <1804800000>;
 			enable-method = "psci";
 			reg = <0x101>;
-			efficiency = <1126>;
+			efficiency = <1024>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -190,7 +190,7 @@
 			clock-frequency = <1804800000>;
 			enable-method = "psci";
 			reg = <0x102>;
-			efficiency = <1126>;
+			efficiency = <1024>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;
@@ -210,7 +210,7 @@
 			clock-frequency = <1804800000>;
 			enable-method = "psci";
 			reg = <0x103>;
-			efficiency = <1126>;
+			efficiency = <1024>;
 			sched-energy-costs = <&CPU_COST_0 &CLUSTER_COST_1>;
 			next-level-cache = <&L2_1>;
 			#cooling-cells = <2>;

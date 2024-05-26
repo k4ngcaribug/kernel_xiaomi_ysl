@@ -2,6 +2,7 @@
 #include "ysl-pinctrl.dtsi"
 #include "ysl-pm.dtsi"
 #include "ysl-regulator.dtsi"
+#include "ysl-cpu.dtsi"
 #include "ysl-gpu.dtsi"
 #include "ysl-audio.dtsi"
 #include "ysl-mdss.dtsi"
