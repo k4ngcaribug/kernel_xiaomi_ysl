@@ -165,6 +165,9 @@
 /* PM8953 */
 #define PM8953_SUBTYPE		0x16
 
+/* PMI8940 */
+#define PMI8940_SUBTYPE		0x40
+
 /* PMI8950 */
 #define PMI8950_SUBTYPE		0x11
 
