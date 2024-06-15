@@ -12,6 +12,7 @@
  */
 
 #include <dt-bindings/gpio/gpio.h>
+#include "msm8953-camera-sensor-mtp.dtsi"
 
 &blsp1_uart0 {
 	status = "ok";
