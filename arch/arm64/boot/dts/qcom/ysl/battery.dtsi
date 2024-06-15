@@ -1,0 +1,10 @@
+/* k4.9 msm8953-mtp.dts */
+
+/{
+	mtp_batterydata: qcom,battery-data {
+		qcom,batt-id-range-pct = <15>;
+        	#include "batterydata/batterydata-coslight-3000mah.dtsi"
+        	#include "batterydata/batterydata-sunwoda-3000mah.dtsi"
+        	#include "batterydata/batterydata-share-3000mah.dtsi"
+	};
+};

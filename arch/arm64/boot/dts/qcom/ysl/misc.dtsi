@@ -1,0 +1,105 @@
+/* k4.9 msm8953-mtp.dts */
+&i2c_2 {//E6
+	status = "ok";
+	awinic@45 { // Breath Light-Driven
+		compatible = "awinic,aw2023_led";
+		reg = <0x45>;
+		vdd-supply = <&pm8953_l10>;
+		vcc-supply = <&pm8953_l5>;
+
+		aw2023,red {
+			aw2023,name = "red";
+			aw2023,id = <0>;
+			aw2023,imax = <3>;
+			aw2023,led-current = <7>;
+			aw2023,max-brightness = <255>;
+			aw2023,rise-time-ms = <6>;
+			aw2023,hold-time-ms = <0>;
+			aw2023,fall-time-ms = <6>;
+			aw2023,off-time-ms = <4>;
+
+			aw2013,max-current = <1>;
+			aw2013,max-brightness = <255>;
+			aw2013,rise-time-ms = <4>;
+			aw2013,hold-time-ms = <1>;
+			aw2013,fall-time-ms = <4>;
+			aw2013,off-time-ms = <1>;
+		};
+	};
+};
+&soc {
+	sn_fuse: snfuse@a4128 {
+		compatible = "qcom,sn-fuse";
+		reg = <0xA4128 0x4>,
+		      <0xA6034 0x4>;
+		reg-names = "sn-base","fuse-state";
+	};		
+	ant_check {
+		compatible = "ant_check";
+                pinctrl-names = "ant_check_irq_state";
+                pinctrl-0 = <&ant_check_irq_state>;
+                ant_check,irq_gpio = <&tlmm 9 0>;
+	};
+};
+&spmi_bus {
+	qcom,pmi8940@3 {
+		labibb: qpnp-labibb-regulator {
+			status = "ok";
+			ibb_regulator: qcom,ibb@dc00 {
+				/delete-property/
+					qcom,qpnp-ibb-use-default-voltage;
+				qcom,qpnp-ibb-init-lcd-voltage = <5700000>;
+			};
+
+			lab_regulator: qcom,lab@de00 {
+				/delete-property/
+					qcom,qpnp-ibb-use-default-voltage;
+				qcom,qpnp-ibb-init-lcd-voltage = <5700000>;
+			};
+		};
+	};
+};
+&pm8953_vadc {
+chan@11 {
+		label = "case_therm";
+		reg = <0x11>;
+		qcom,decimation = <0>;
+		qcom,pre-div-channel-scaling = <0>;
+		qcom,calibration-type = "ratiometric";
+		qcom,scale-function = <2>;
+		qcom,hw-settle-time = <2>;
+		qcom,fast-avg-setup = <0>;
+		qcom,vadc-thermal-node;
+	};
+};	
+&usb3 {
+	qcom,usbin-vadc = <&pmi8940_vadc>;
+	qcom,detect-dpdm-floating;
+	extcon = <&qpnp_smbcharger>;
+};
+&qusb_phy {
+		qcom,qusb-phy-init-seq = <0xF8 0x80
+					0x73 0x84
+					0x83 0x88
+					0xC5 0x8C
+					0x14 0x9C
+					0x30 0x08
+					0x79 0x0C
+					0x21 0x10
+					0x00 0x90
+					0x9F 0x1C
+					0x00 0x18>;
+};
+&sdhc_2 {
+	cd-gpios = <&tlmm 133 0x0>;
+};
+&spi_5 {
+	status = "ok";
+	    spi_ir@1 {
+	        compatible = "ifrared,spi-msm-ir-slave";
+	        reg = <1>; /* Chip select 0 */
+	        spi-max-frequency = <50000000>;
+	        spi-cpol;
+	        status = "ok";
+	    };
+};
