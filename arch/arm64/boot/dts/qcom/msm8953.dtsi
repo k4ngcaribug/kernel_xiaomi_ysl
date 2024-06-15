@@ -16,7 +16,6 @@
 #include <dt-bindings/spmi/spmi.h>
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/regulator/qcom,rpm-smd-regulator.h>
-#include <dt-bindings/clock/msm-clocks-8953.h>
 #include <dt-bindings/msm/msm-bus-ids.h>
 
 / {
@@ -27,7 +26,7 @@
 	interrupt-parent = <&wakegic>;
 
 	chosen {
-		bootargs = "core_ctl_disable_cpumask=0-7 kpti=0 noirqdebug nodebugmon";
+		bootargs = "core_ctl_disable_cpumask=0-7 kpti=0";
 	};
 
 	vendor: vendor {
@@ -131,12 +130,12 @@
 			status = "disabled";
 		};
 
-		cont_splash_mem: splash_region@0x90001000 {
+		cont_splash_mem: splash_region@90001000 {
 			reg = <0x0 0x90001000 0x0 0x13ff000>;
 			label = "cont_splash_mem";
 		};
 
-		adsp_shmem_device_mem: adsp_shmem_device_region@0xc0100000 {
+		adsp_shmem_device_mem: adsp_shmem_device_region@c0100000 {
 			compatible = "shared-dma-pool";
 			label = "adsp_shmem_device_mem";
 			reusable;
@@ -156,7 +155,7 @@
 		dump_mem: mem_dump_region {
 			compatible = "shared-dma-pool";
 			reusable;
-			size = <0 0x400000>;
+			size = <0x400000>;
 		};
 
 		/* global autoconfigured region for contiguous allocations */
