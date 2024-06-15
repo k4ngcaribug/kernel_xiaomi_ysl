@@ -1,0 +1,8 @@
+/ {
+	reserved-memory {
+		pstore_reserve_mem: pstore_reserve_mem@0x91400000 {
+			reg = <0x0 0x91400000  0x0 0x400000>;
+			label = "cont_splash_mem";
+		};
+	};
+};
