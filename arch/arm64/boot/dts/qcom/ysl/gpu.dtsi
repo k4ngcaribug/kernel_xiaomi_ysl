@@ -18,9 +18,9 @@
 		< 216000000   2 >,  /* Low SVS   */
 		< 320000000   3 >,  /* SVS       */
 		< 400000000   4 >,  /* SVS Plus  */
-		< 510000000   5 >,  /* NOM       */
-		< 560000000   6 >,  /* Nom Plus  */
-		< 600000000   7 >;  /* Turbo     */
+		< 460800000   5 >,  /* SVS Plus  */
+		< 510000000   6 >,  /* NOM       */
+		< 560000000   7 >;  /* Nom Plus  */
 };
 
 /* GPU Overrides*/
@@ -34,18 +34,9 @@
 
 		compatible = "qcom,gpu-pwrlevels";
 
-		/* TURBO */
+		/* NOM+ */
 		qcom,gpu-pwrlevel@0 {
 			reg = <0>;
-			qcom,gpu-freq = <600000000>;
-			qcom,bus-freq = <10>;
-			qcom,bus-min = <10>;
-			qcom,bus-max = <10>;
-		};
-
-		/* NOM+ */
-		qcom,gpu-pwrlevel@1 {
-			reg = <1>;
 			qcom,gpu-freq = <560000000>;
 			qcom,bus-freq = <10>;
 			qcom,bus-min = <8>;
@@ -53,12 +44,21 @@
 		};
 
 		/* NOM */
-		qcom,gpu-pwrlevel@2 {
-			reg = <2>;
+		qcom,gpu-pwrlevel@1 {
+			reg = <1>;
 			qcom,gpu-freq = <510000000>;
 			qcom,bus-freq = <9>;
 			qcom,bus-min = <6>;
 			qcom,bus-max = <10>;
+		};
+
+		/* SVS+ */
+		qcom,gpu-pwrlevel@2 {
+			reg = <2>;
+			qcom,gpu-freq = <460800000>;
+			qcom,bus-freq = <8>;
+			qcom,bus-min = <7>;
+			qcom,bus-max = <8>;
 		};
 
 		/* SVS+ */
@@ -96,6 +96,7 @@
 			qcom,bus-min = <1>;
 			qcom,bus-max = <4>;
 		};
+
 		/* XO */
 		qcom,gpu-pwrlevel@7 {
 			reg = <7>;
