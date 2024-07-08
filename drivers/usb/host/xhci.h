@@ -984,6 +984,7 @@ struct xhci_interval_bw_table {
 	unsigned int		ss_bw_out;
 };
 
+#define EP_CTX_PER_DEV                31
 
 struct xhci_virt_device {
 	struct usb_device		*udev;
