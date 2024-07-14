@@ -479,6 +479,10 @@ alternative_endif
 	movk	\reg, :abs_g0_nc:\val
 	.endm
 
+	.macro	pte_to_phys, phys, pte
+	and	\phys, \pte, #(((1 << (48 - PAGE_SHIFT)) - 1) << PAGE_SHIFT)
+	.endm
+
 /*
  * Return the current thread_info.
  */
@@ -528,7 +532,6 @@ alternative_endif
 	.macro	pte_to_phys, phys, pte
 	and	\phys, \pte, #(((1 << (48 - PAGE_SHIFT)) - 1) << PAGE_SHIFT)
 	.endm
-
 	.macro __mitigate_spectre_bhb_loop      tmp
 #ifdef CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
 alternative_cb  spectre_bhb_patch_loop_iter

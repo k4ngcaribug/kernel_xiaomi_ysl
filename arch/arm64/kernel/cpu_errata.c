@@ -126,10 +126,12 @@ static void __install_bp_hardening_cb(bp_hardening_cb_t fn,
 		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
 	}
 
-	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
-	__this_cpu_write(bp_hardening_data.fn, fn);
-	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
-	__hardenbp_enab = true;
+	if (fn != __this_cpu_read(bp_hardening_data.fn)) {
+		__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
+		__this_cpu_write(bp_hardening_data.fn, fn);
+		__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
+		__hardenbp_enab = true;
+	}
 	spin_unlock(&bp_lock);
 }
 #else
@@ -167,18 +169,19 @@ static void  install_bp_hardening_cb(const struct arm64_cpu_capabilities *entry,
 }
 
 #ifdef CONFIG_PSCI_BP_HARDENING
-static int enable_psci_bp_hardening(void *data)
+static void enable_psci_bp_hardening(const struct arm64_cpu_capabilities *entry)
 {
-	const struct arm64_cpu_capabilities *entry = data;
-
 	if (psci_ops.get_version)
 		install_bp_hardening_cb(entry,
 				       (bp_hardening_cb_t)psci_ops.get_version,
 				       __psci_hyp_bp_inval_start,
 				       __psci_hyp_bp_inval_end);
-	return 0;
 }
 #endif
+
+#include <uapi/linux/psci.h>
+#include <linux/arm-smccc.h>
+#include <linux/psci.h>
 
 static void call_smc_arch_workaround_1(void)
 {
@@ -454,8 +457,20 @@ static const struct midr_range arm64_bp_harden_smccc_cpus[] = {
 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A72),
 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
 	MIDR_ALL_VERSIONS(MIDR_CORTEX_A75),
+#ifndef CONFIG_PSCI_BP_HARDENING
+	MIDR_ALL_VERSIONS(MIDR_KRYO3G),
+	MIDR_ALL_VERSIONS(MIDR_KRYO2XX_GOLD),
+#endif
 	MIDR_ALL_VERSIONS(MIDR_BRCM_VULCAN),
 	MIDR_ALL_VERSIONS(MIDR_CAVIUM_THUNDERX2),
+	{},
+};
+
+static const struct midr_range arm64_psci_bp_harden_cpus[] = {
+#ifdef CONFIG_PSCI_BP_HARDENING
+	MIDR_ALL_VERSIONS(MIDR_KRYO3G),
+	MIDR_ALL_VERSIONS(MIDR_KRYO2XX_GOLD),
+#endif
 	{},
 };
 
@@ -562,6 +577,13 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
 		ERRATA_MIDR_RANGE_LIST(arm64_bp_harden_smccc_cpus),
 		.cpu_enable = enable_smccc_arch_workaround_1,
 	},
+#ifdef CONFIG_PSCI_BP_HARDENING
+	{
+		.capability = ARM64_HARDEN_BRANCH_PREDICTOR,
+		ERRATA_MIDR_RANGE_LIST(arm64_psci_bp_harden_cpus),
+		.cpu_enable = enable_psci_bp_hardening,
+	},
+#endif
 #endif
 #ifdef CONFIG_ARM64_SSBD
 	{
@@ -725,6 +747,8 @@ static bool is_spectre_bhb_fw_affected(int scope)
 	static const struct midr_range spectre_bhb_firmware_mitigated_list[] = {
 		MIDR_ALL_VERSIONS(MIDR_CORTEX_A73),
 		MIDR_ALL_VERSIONS(MIDR_CORTEX_A75),
+		MIDR_ALL_VERSIONS(MIDR_KRYO3G),
+		MIDR_ALL_VERSIONS(MIDR_KRYO2XX_GOLD),
 		{},
 	};
 	bool cpu_in_list = is_midr_in_range_list(read_cpuid_id(),
@@ -841,8 +865,11 @@ static void kvm_setup_bhb_slot(const char *hyp_vecs_start)
 		__copy_hyp_vect_bpi(slot, hyp_vecs_start, hyp_vecs_end);
 	}
 
-	__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
-	__this_cpu_write(bp_hardening_data.template_start, hyp_vecs_start);
+	if (hyp_vecs_start != __this_cpu_read(bp_hardening_data.template_start)) {
+		__this_cpu_write(bp_hardening_data.hyp_vectors_slot, slot);
+		__this_cpu_write(bp_hardening_data.template_start,
+				 hyp_vecs_start);
+	}
 	spin_unlock(&bp_lock);
 }
 #else
@@ -858,7 +885,9 @@ static void kvm_setup_bhb_slot(const char *hyp_vecs_start) { };
 static bool is_spectrev2_safe(void)
 {
 	return !is_midr_in_range_list(read_cpuid_id(),
-				      arm64_bp_harden_smccc_cpus);
+					arm64_psci_bp_harden_cpus) &&
+		!is_midr_in_range_list(read_cpuid_id(),
+					arm64_bp_harden_smccc_cpus);
 }
 
 void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *entry)
@@ -884,7 +913,13 @@ void spectre_bhb_enable_mitigation(const struct arm64_cpu_capabilities *entry)
 	} else if (spectre_bhb_loop_affected(SCOPE_LOCAL_CPU)) {
 		switch (spectre_bhb_loop_affected(SCOPE_SYSTEM)) {
 		case 8:
-			kvm_setup_bhb_slot(__spectre_bhb_loop_k8_start);
+			/*
+			 * A57/A72-r0 will already have selected the
+			 * spectre-indirect vector, which is sufficient
+			 * for BHB too.
+			 */
+			if (!__this_cpu_read(bp_hardening_data.fn))
+				kvm_setup_bhb_slot(__spectre_bhb_loop_k8_start);
 			break;
 		case 24:
 			kvm_setup_bhb_slot(__spectre_bhb_loop_k24_start);

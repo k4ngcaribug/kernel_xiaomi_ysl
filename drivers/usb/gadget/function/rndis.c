@@ -1101,7 +1101,6 @@ EXPORT_SYMBOL_GPL(rndis_add_hdr);
 void rndis_free_response(struct rndis_params *params, u8 *buf)
 {
 	rndis_resp_t *r, *n;
-	unsigned long flags;
 
 	spin_lock(&params->resp_lock);
 	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
@@ -1110,27 +1109,22 @@ void rndis_free_response(struct rndis_params *params, u8 *buf)
 			kfree(r);
 		}
 	}
-
 	spin_unlock(&params->resp_lock);
-
 }
 EXPORT_SYMBOL_GPL(rndis_free_response);
 
 u8 *rndis_get_next_response(struct rndis_params *params, u32 *length)
 {
 	rndis_resp_t *r, *n;
-	unsigned long flags;
 
 	if (!length) return NULL;
 
 	spin_lock(&params->resp_lock);
-
 	list_for_each_entry_safe(r, n, &params->resp_queue, list) {
 		if (!r->send) {
 			r->send = 1;
 			*length = r->length;
 			spin_unlock(&params->resp_lock);
-
 			return r->buf;
 		}
 	}
@@ -1143,7 +1137,6 @@ EXPORT_SYMBOL_GPL(rndis_get_next_response);
 static rndis_resp_t *rndis_add_response(struct rndis_params *params, u32 length)
 {
 	rndis_resp_t *r;
-	unsigned long flags;
 
 	/* NOTE: this gets copied into ether.c USB_BUFSIZ bytes ... */
 	r = kmalloc(sizeof(rndis_resp_t) + length, GFP_ATOMIC);
@@ -1156,7 +1149,6 @@ static rndis_resp_t *rndis_add_response(struct rndis_params *params, u32 length)
 	spin_lock(&params->resp_lock);
 	list_add_tail(&r->list, &params->resp_queue);
 	spin_unlock(&params->resp_lock);
-
 	return r;
 }
 

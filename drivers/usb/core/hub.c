@@ -3520,7 +3520,7 @@ int usb_port_resume(struct usb_device *udev, pm_message_t msg)
 		}
 
 		/* TRSMRCY = 10 msec */
-		msleep(10);
+		usleep_range(10000, 10500);
 	}
 
 	if (udev->persist_enabled)
@@ -4853,8 +4853,8 @@ static void hub_port_connect(struct usb_hub *hub, int port1, u16 portstatus,
 	struct usb_port *port_dev = hub->ports[port1 - 1];
 	struct usb_device *udev = port_dev->child;
 	static int unreliable_port = -1;
-	enum usb_device_speed dev_speed = USB_SPEED_UNKNOWN;
 	bool retry_locked;
+	enum usb_device_speed dev_speed = USB_SPEED_UNKNOWN;
 
 	/* Disconnect any existing devices under this port */
 	if (udev) {
