@@ -24,6 +24,16 @@ struct __wait_queue {
 	struct list_head	task_list;
 };
 
+/*
+ * A single wait-queue entry structure:
+ */
+struct wait_queue_entry {
+        unsigned int                flags;
+        void                        *private;
+        wait_queue_func_t        func;
+        struct list_head        entry;
+};
+
 struct wait_bit_key {
 	void			*flags;
 	int			bit_nr;
