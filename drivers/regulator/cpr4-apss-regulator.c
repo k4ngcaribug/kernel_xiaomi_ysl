@@ -850,8 +850,11 @@ static int cpr4_apss_calculate_open_loop_voltages(struct cpr3_regulator *vreg)
 			CPR4_APSS_VOLTAGE_FUSE_SIZE);
 
 		/* Log before applyimg custom voltages */
+		if (custom_voltage_increase != 0 || custom_voltage_reduce != 0) {
 		cpr3_info(vreg, "Before applying custom voltages: %8s: floor_volt=%7d uV, ceiling_volt=%7d uV\n",
 				corner_name[i], vreg->corner[i].floor_volt, vreg->corner[i].ceiling_volt);
+		}
+
 		/*
 		 * Adjust both floor and ceiling voltages.
 		 * Subtract the custom voltage reduction from the reference voltage.
@@ -863,8 +866,10 @@ static int cpr4_apss_calculate_open_loop_voltages(struct cpr3_regulator *vreg)
 		vreg->corner[i].ceiling_volt += custom_voltage_increase;
 
 		/* Log voltages after applying custom voltages */
+		if (custom_voltage_increase != 0 || custom_voltage_reduce != 0) {
 		cpr3_info(vreg, "after custom voltage: %8s: floor_volt=%7d uV, ceiling_volt=%7d uV\n",
 				corner_name[i], vreg->corner[i].floor_volt, vreg->corner[i].ceiling_volt);
+		}
 
 		/* Log fused open-loop voltage values for debugging purposes. */
 		cpr3_info(vreg, "fused %8s: open-loop=%7d uV\n", corner_name[i],
