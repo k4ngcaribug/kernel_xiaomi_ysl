@@ -815,6 +815,8 @@
 
 					/* Speed bin 7 */
 					<0 0 0 1 1 1 1 1>;
+					qcom,custom-voltage-reduce = <0>;
+					qcom,custom-voltage-increase = <0>;
 			};
 		};
 	};

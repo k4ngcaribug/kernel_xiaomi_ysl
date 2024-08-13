@@ -375,6 +375,10 @@ static bool boost_fuse[MAX_BOOST_CONFIG_FUSE_VALUE] = {0, 1, 1, 1, 1, 1, 1, 1};
 /* Use a very high value for max aging margin to be applied */
 #define MSM8953_APSS_AGING_MAX_AGE_MARGIN_QUOT	(-1000)
 
+/* For safety, the "custom voltage reduce" and "custom voltage increase" must <= 160mV */
+#define CUSTOM_VOLTAGE_REDUCE_LIMIT 160000
+#define CUSTOM_VOLTAGE_INCREASE_LIMIT 160000
+
 /*
  * SOC IDs
  */
@@ -787,6 +791,8 @@ static int cpr4_apss_calculate_open_loop_voltages(struct cpr3_regulator *vreg)
 	int *fmax_corner;
 	const char * const *corner_name;
 	enum soc_id soc_revision;
+	u32 custom_voltage_reduce;
+	u32 custom_voltage_increase;
 
 	fuse_volt = kcalloc(vreg->fuse_corner_count, sizeof(*fuse_volt),
 				GFP_KERNEL);
@@ -818,11 +824,40 @@ static int cpr4_apss_calculate_open_loop_voltages(struct cpr3_regulator *vreg)
 		goto done;
 	}
 
+	/* Read custom-voltage-reduce value from device tree node */
+	rc = of_property_read_u32(node, "qcom,custom-voltage-reduce", &custom_voltage_reduce);
+
+	if (rc < 0)
+		custom_voltage_reduce = 0;
+	else if (custom_voltage_reduce > CUSTOM_VOLTAGE_REDUCE_LIMIT)
+		custom_voltage_reduce = CUSTOM_VOLTAGE_REDUCE_LIMIT;
+
+	/* Read custom-voltage-increase value from device tree node */
+	rc = of_property_read_u32(node, "qcom,custom-voltage-increase", &custom_voltage_increase);
+
+	if (rc < 0)
+    		custom_voltage_increase = 0;
+	else if (custom_voltage_increase > CUSTOM_VOLTAGE_INCREASE_LIMIT)
+		custom_voltage_increase = CUSTOM_VOLTAGE_INCREASE_LIMIT;
+
+	cpr3_info(vreg, "custom voltage reduce: %d uV\n", custom_voltage_reduce);
+	cpr3_info(vreg, "custom voltage increase: %d uV\n", custom_voltage_increase);
+
 	for (i = 0; i < vreg->fuse_corner_count; i++) {
-		fuse_volt[i] = cpr3_convert_open_loop_voltage_fuse(ref_volt[i],
+		int adjusted_voltage = ref_volt[i] - custom_voltage_reduce + custom_voltage_increase;
+		fuse_volt[i] = cpr3_convert_open_loop_voltage_fuse(adjusted_voltage,
 			CPR4_APSS_FUSE_STEP_VOLT, fuse->init_voltage[i],
 			CPR4_APSS_VOLTAGE_FUSE_SIZE);
 
+		/*
+		 * Adjust both floor and ceiling voltages.
+		 * Subtract the custom voltage reduction from the reference voltage.
+		 * Add the custom voltage increase to the resulting voltage.
+		 */
+		vreg->corner[i].floor_volt -= custom_voltage_reduce;
+		vreg->corner[i].floor_volt += custom_voltage_increase;
+		vreg->corner[i].ceiling_volt -= custom_voltage_reduce;
+		vreg->corner[i].ceiling_volt += custom_voltage_increase;
 		/* Log fused open-loop voltage values for debugging purposes. */
 		cpr3_info(vreg, "fused %8s: open-loop=%7d uV\n", corner_name[i],
 			  fuse_volt[i]);
